@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/02 22:29:09 by clagarci          #+#    #+#             */
-/*   Updated: 2024/03/10 15:28:15 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/03/10 17:16:41 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,29 +15,23 @@
 #include "libft/libft.h"
 #include <stdio.h>
 
-int	count_digits(int num, int base)
+int	count_digits(int num)
 {
 	int	len;
 
-	if (base != 10 || base != 16)
-		return (0);
 	len = 0;
 	if (num <= 0)
 	{
-		if (base == 10)
-			len++;
+		len++;
 		num *= -1;
 	}
 	while (num > 0)
 	{
-		num /= base;
+		num /= 10;
 		len++;
 	}
-	printf("\nlen %d\n", len);
 	return (len);
 }
-
-
 /*
 * juntar ft_putnbr_uint y ft_putnbr_hex
 */
@@ -174,7 +168,7 @@ int	ft_printf(char const *param, ...)
 			{
 				d = va_arg(ap, int);
 				ft_putnbr_fd(d, 1);
-				char_printed += count_digits(c, 10);
+				char_printed += count_digits(d);
 			}
 			else if (*param == 'u')
 			{
