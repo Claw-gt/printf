@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/02 22:29:09 by clagarci          #+#    #+#             */
-/*   Updated: 2024/03/10 17:16:41 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/03/10 19:12:30 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ int	count_digits(int num)
 	int	len;
 
 	len = 0;
+	if (num == INT_MIN)
+		return (11);
 	if (num <= 0)
 	{
 		len++;
@@ -106,30 +108,56 @@ int	ft_print_hex(unsigned long int nbr)
 	int		module;
 	char	*base;
 
-	base = "0123456789abcdef";
 	num_printed = 0;
+	base = "0123456789abcdef";
 	module = 0;
 	if (nbr > 15)
 	{
-		num_printed++;
-		ft_print_hex(nbr / 16);
+		num_printed += ft_print_hex(nbr / 16);
 	}
 	module = nbr % 16;
 	write(1, &base[module], 1);
 	return (num_printed + 1); // +1 por el módulo
 }
+
+int ft_putnbr_int(int nbr)
+{
+	char	module;
+	int		num_printed;
+
+	num_printed = 0;
+	module = '0';
+	if (nbr == INT_MIN)
+		write(1, "-2147483648", 11);
+	else
+	{
+		if (nbr < 0)
+		{
+			num_printed++;
+			nbr *= -1;
+			write(1, "-", 1);
+		}
+		if (nbr > 9)
+		{
+			num_printed += ft_putnbr_int(nbr / 10);
+		}
+		module = nbr % 10 + '0';
+		write(1, &module, 1);
+	}
+	return(num_printed + 1);
+}
 int	ft_putnbr_base(unsigned int nbr, char *base)
 {
-	int			module;
-	static int	num_printed;
+	int	module;
+	int	num_printed;
 
+	num_printed = 0;
 	if (ft_strlen(base) != 16 && ft_strlen(base) != 10)
 		return (0);
 	module = 0;
 	if (nbr > (ft_strlen(base) - 1))
 	{
-		num_printed++;
-		ft_putnbr_base(nbr / ft_strlen(base), base);
+		num_printed += ft_putnbr_base(nbr / ft_strlen(base), base);
 	}
 	module = nbr % ft_strlen(base);
 	write(1, &base[module], 1);
@@ -140,9 +168,10 @@ int	print_address(unsigned long p)
 {
 	int	num_printed;
 
-	num_printed = 0;
+	//num_printed = 0;
 	ft_putstr_fd("0x", 1);
 	num_printed = 2;
+	//num_printed += ft_print_hex(p);
 	num_printed += ft_print_hex(p);
 	return (num_printed);
 }
@@ -167,16 +196,15 @@ int	ft_printf(char const *param, ...)
 			if (*param == 'd' || *param == 'i')
 			{
 				d = va_arg(ap, int);
+				//char_printed += ft_putnbr_int(d);
 				ft_putnbr_fd(d, 1);
 				char_printed += count_digits(d);
 			}
 			else if (*param == 'u')
 			{
 				u = va_arg(ap, unsigned int);
-				//char_printed += ft_putnbr_uint(u, 1);
-				//char_printed += ft_putnbr_base(u, 10, 1);
 				char_printed += ft_putnbr_base(u, "0123456789");
-				//char_printed += count_digits(u, 10);
+				//ft_putnbr_base(u, "0123456789", char_printed);
 			}
 			else if (*param == 'c')
 			{
@@ -203,16 +231,17 @@ int	ft_printf(char const *param, ...)
 				u = va_arg(ap, unsigned int);
 				if (*param == 'x')
 					char_printed += ft_putnbr_base(u, "0123456789abcdef");
-					//char_printed += ft_putnbr_base(u, 16, 1);
-					//char_printed += ft_putnbr_hex(u, 1);
+					//ft_putnbr_base(u, "0123456789abcdef", char_printed);
 				else
 					char_printed += ft_putnbr_base(u, "0123456789ABCDEF");
+					//ft_putnbr_base(u, "0123456789ABCDEF", char_printed);
 					//char_printed += ft_putnbr_base(u, 16, 0);
 					//char_printed += ft_putnbr_hex(u, 0);
 			}
 			else if (*param == 'p')
 			{
 				p = va_arg(ap, void *);
+				//print_address((unsigned long int)p, char_printed);
 				char_printed += print_address((unsigned long int)p);
 			}
 			else if (*param == '%')
