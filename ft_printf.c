@@ -6,264 +6,66 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/02 22:29:09 by clagarci          #+#    #+#             */
-/*   Updated: 2024/03/10 19:12:30 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/03/14 15:51:41 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "ft_printf.h"
-#include "libft/libft.h"
-#include <stdio.h>
 
-int	count_digits(int num)
-{
-	int	len;
-
-	len = 0;
-	if (num == INT_MIN)
-		return (11);
-	if (num <= 0)
-	{
-		len++;
-		num *= -1;
-	}
-	while (num > 0)
-	{
-		num /= 10;
-		len++;
-	}
-	return (len);
-}
-/*
-* juntar ft_putnbr_uint y ft_putnbr_hex
-*/
-
-/*int	ft_putnbr_uint(unsigned int nbr, int fd)
-{
-	char		module;
-	static int	num_printed;
-
-	module = '0';
-	if (nbr > 9)
-	{
-		num_printed++;
-		ft_putnbr_uint(nbr / 10, fd);
-	}
-	module = nbr % 10 + '0';
-	write(fd, &module, 1);
-	return (num_printed + 1); // +1 por el módulo
-}*/
-
-/*int	ft_putnbr_hex(unsigned int nbr, int minus)
-{
-	int			module;
-	char		*base_minus;
-	char		*base_mayus;
-	static int	num_printed;
-
-	base_minus = "0123456789abcdef";
-	base_mayus = "0123456789ABCDEF";
-	module = 0;
-	if (nbr > 15)
-	{
-		num_printed++;
-		ft_putnbr_hex(nbr / 16, minus);
-	}
-	module = nbr % 16;
-	if (minus == 1)
-		write(1, &base_minus[module], 1);
-	else
-		write(1, &base_mayus[module], 1);
-	return (num_printed + 1); // +1 por el módulo
-}*/
-
-/*int	ft_putnbr_base(unsigned int nbr, unsigned int base, int minus)
-{
-	int			module;
-	char		*base_minus;
-	char		*base_mayus;
-	static int	num_printed;
-
-	if (base != 16 && base != 10)
-		return (0);
-	base_minus = "0123456789abcdef";
-	base_mayus = "0123456789ABCDEF";
-	module = 0;
-	if (nbr > (base - 1))
-	{
-		num_printed++;
-		ft_putnbr_base(nbr / base, base, minus);
-	}
-	module = nbr % base;
-	if (minus == 1)
-		write(1, &base_minus[module], 1);
-	else
-		write(1, &base_mayus[module], 1);
-	return (num_printed + 1); // +1 por el módulo
-}*/
-
-int	ft_print_hex(unsigned long int nbr)
-{
-	int		num_printed;
-	int		module;
-	char	*base;
-
-	num_printed = 0;
-	base = "0123456789abcdef";
-	module = 0;
-	if (nbr > 15)
-	{
-		num_printed += ft_print_hex(nbr / 16);
-	}
-	module = nbr % 16;
-	write(1, &base[module], 1);
-	return (num_printed + 1); // +1 por el módulo
-}
-
-int ft_putnbr_int(int nbr)
-{
-	char	module;
-	int		num_printed;
-
-	num_printed = 0;
-	module = '0';
-	if (nbr == INT_MIN)
-		write(1, "-2147483648", 11);
-	else
-	{
-		if (nbr < 0)
-		{
-			num_printed++;
-			nbr *= -1;
-			write(1, "-", 1);
-		}
-		if (nbr > 9)
-		{
-			num_printed += ft_putnbr_int(nbr / 10);
-		}
-		module = nbr % 10 + '0';
-		write(1, &module, 1);
-	}
-	return(num_printed + 1);
-}
-int	ft_putnbr_base(unsigned int nbr, char *base)
-{
-	int	module;
-	int	num_printed;
-
-	num_printed = 0;
-	if (ft_strlen(base) != 16 && ft_strlen(base) != 10)
-		return (0);
-	module = 0;
-	if (nbr > (ft_strlen(base) - 1))
-	{
-		num_printed += ft_putnbr_base(nbr / ft_strlen(base), base);
-	}
-	module = nbr % ft_strlen(base);
-	write(1, &base[module], 1);
-	return (num_printed + 1); // +1 por el módulo
-}
-
-int	print_address(unsigned long p)
+int	ft_putaddress(unsigned long p)
 {
 	int	num_printed;
 
-	//num_printed = 0;
-	ft_putstr_fd("0x", 1);
-	num_printed = 2;
-	//num_printed += ft_print_hex(p);
-	num_printed += ft_print_hex(p);
+	num_printed = 0;
+	num_printed += ft_putstr("0x");
+	num_printed += ft_putnbr_lint(p);
 	return (num_printed);
+}
+
+int	convert_param(va_list args, char character)
+{
+	if (character == 'c')
+		return (ft_putchar((char)va_arg(args, int)));
+	else if (character == 's')
+		return (ft_putstr(va_arg(args, char *)));
+	else if (character == 'p')
+		return (ft_putaddress(va_arg(args, unsigned long)));
+	else if (character == 'd' || character == 'i')
+		return (ft_putnbr_int(va_arg(args, int)));
+	else if (character == 'u')
+		return (ft_putnbr_uint(va_arg(args, unsigned int), "0123456789"));
+	else if (character == 'x')
+		return (ft_putnbr_uint(va_arg(args, unsigned int), "0123456789abcdef"));
+	else if (character == 'X')
+		return (ft_putnbr_uint(va_arg(args, unsigned int), "0123456789ABCDEF"));
+	else if (character == '%')
+		return (ft_putchar('%'));
+	return (-1);
 }
 
 int	ft_printf(char const *param, ...)
 {
-	va_list			ap;
-	int				d;
-	unsigned int	u;
-	char			c;
-	char			*s;
-	void			*p;
-	int				char_printed;
+	va_list	args;
+	int		char_printed;
+	int		aux;
 
+	aux = 0;
 	char_printed = 0;
-	va_start(ap, param);
+	va_start(args, param);
 	while (*param != '\0')
 	{
 		if (*param == '%' && *(param + 1) != '\0')
 		{
 			param++;
-			if (*param == 'd' || *param == 'i')
-			{
-				d = va_arg(ap, int);
-				//char_printed += ft_putnbr_int(d);
-				ft_putnbr_fd(d, 1);
-				char_printed += count_digits(d);
-			}
-			else if (*param == 'u')
-			{
-				u = va_arg(ap, unsigned int);
-				char_printed += ft_putnbr_base(u, "0123456789");
-				//ft_putnbr_base(u, "0123456789", char_printed);
-			}
-			else if (*param == 'c')
-			{
-				c = (char)va_arg(ap, int);
-				ft_putchar_fd(c, 1);
-				char_printed++;
-			}
-			else if (*param == 's')
-			{
-				s = va_arg(ap, char *);
-				if (s)
-				{
-					ft_putstr_fd(s, 1);
-					char_printed += ft_strlen(s);
-				}
-				else
-				{
-					ft_putstr_fd("(null)", 1);
-					char_printed += 6;
-				}
-			}
-			else if (*param == 'x' || *param == 'X')
-			{
-				u = va_arg(ap, unsigned int);
-				if (*param == 'x')
-					char_printed += ft_putnbr_base(u, "0123456789abcdef");
-					//ft_putnbr_base(u, "0123456789abcdef", char_printed);
-				else
-					char_printed += ft_putnbr_base(u, "0123456789ABCDEF");
-					//ft_putnbr_base(u, "0123456789ABCDEF", char_printed);
-					//char_printed += ft_putnbr_base(u, 16, 0);
-					//char_printed += ft_putnbr_hex(u, 0);
-			}
-			else if (*param == 'p')
-			{
-				p = va_arg(ap, void *);
-				//print_address((unsigned long int)p, char_printed);
-				char_printed += print_address((unsigned long int)p);
-			}
-			else if (*param == '%')
-			{
-				ft_putchar_fd('%', 1);
-				char_printed++;
-			}
-			else
-			{
-				ft_putchar_fd(*param, 1);
-				char_printed++;
-			}
-			//printf("\nchar_printed %d\n", char_printed);
+			aux = convert_param(args, *param);
+			if (aux == -1)
+				return (-1);
+			char_printed += aux;
 		}
 		else
-		{
-			ft_putchar_fd(*param, 1);
-			char_printed++;
-			//printf("\nchar_printed %d\n", char_printed);
-		}
+			char_printed += ft_putchar(*param);
 		param++;
 	}
-	va_end(ap);
+	va_end(args);
 	return (char_printed);
 }

@@ -35,3 +35,20 @@ change directory by applying **-C** libft(same as cd libft) after the instructio
 same as:
 
 `cd libft && make` -> The change of path goes before the instruction
+
+MUY IMPORTANTE: copiar librería libft.a en la librería que estás creando
+$(NAME): $(MY_OBJECTS)
+		make -C libft
+		**cp libft/libft.a $(NAME)**
+		ar rcs $(NAME) $(MY_OBJECTS)
+clean:
+	rm -f $(MY_OBJECTS)
+	make clean -C libft
+
+fclean: clean
+	rm -f $(NAME)
+	cd libft && make fclean
+
+## Return (-1)
+
+write() function: "If write() is interrupted by a signal before it writes any data, it shall return -1 with errno"
