@@ -57,6 +57,8 @@ int	ft_printf(char const *param, ...)
 	int		char_printed;
 	int		aux;
 
+	if (!param)
+		return (NULL);
 	aux = 0;
 	char_printed = 0;
 	va_start(args, param);
