@@ -10,7 +10,7 @@ CFLAGS += -Wall -Wextra -Werror
 all: $(NAME)
 
 $(NAME): $(MY_OBJECTS)
-		ar rc $(NAME) $(MY_OBJECTS)
+	ar rc $(NAME) $(MY_OBJECTS)
 clean:
 	rm -f $(MY_OBJECTS)
 

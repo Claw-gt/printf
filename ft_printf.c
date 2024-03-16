@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/02 22:29:09 by clagarci          #+#    #+#             */
-/*   Updated: 2024/03/14 15:51:41 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/03/16 15:37:14 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,18 @@
 int	ft_putaddress(unsigned long p)
 {
 	int	num_printed;
+	int	aux;
 
+	aux = 0;
 	num_printed = 0;
-	num_printed += ft_putstr("0x");
-	num_printed += ft_putnbr_lint(p);
+	aux = ft_putstr("0x");
+	if (aux == -1)
+		return (-1);
+	num_printed += aux;
+	aux = ft_putnbr_lint(p);
+	if (aux == -1)
+		return (-1);
+	num_printed += aux;
 	return (num_printed);
 }
 
@@ -54,18 +62,19 @@ int	ft_printf(char const *param, ...)
 	va_start(args, param);
 	while (*param != '\0')
 	{
-		if (*param == '%' && *(param + 1) != '\0')
+		if (*param == '%' && *(++param))
 		{
-			param++;
 			aux = convert_param(args, *param);
 			if (aux == -1)
 				return (-1);
 			char_printed += aux;
 		}
+		else if (ft_putchar(*param) == -1)
+			return (-1);
 		else
-			char_printed += ft_putchar(*param);
+			char_printed++;
 		param++;
 	}
-	va_end(args);
+	va_end (args);
 	return (char_printed);
 }

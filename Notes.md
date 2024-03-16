@@ -52,3 +52,4 @@ fclean: clean
 ## Return (-1)
 
 write() function: "If write() is interrupted by a signal before it writes any data, it shall return -1 with errno"
+- Check if recursive call returns -1.
